@@ -9,7 +9,16 @@ const { Pool } = pg;
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 app.use(express.json());
-app.use(express.static(path.join(__dirname, "public")));
+const publicDir = path.join(__dirname, "public");
+const publicIndex = path.join(publicDir, "index.html");
+const rootIndex = path.join(__dirname, "index.html");
+const fs = await import("fs");
+
+if (fs.existsSync(publicDir)) {
+  app.use(express.static(publicDir));
+} else {
+  app.use(express.static(__dirname));
+}
 
 const PORT = process.env.PORT || 3000;
 const DATABASE_URL = process.env.DATABASE_URL;
@@ -137,8 +146,9 @@ app.delete("/api/admin/servers/:id",auth,admin,async(req,res)=>{
  await db("DELETE FROM servers WHERE id=$1",[req.params.id]); res.json({ok:true});
 });
 
-app.get("/{*splat}",(req,res)=>{
-  res.sendFile(path.join(__dirname,"public","index.html"));
+app.get("*",(req,res)=>{
+  const indexFile = fs.existsSync(publicIndex) ? publicIndex : rootIndex;
+  res.sendFile(indexFile);
 });
 
 init().then(()=>app.listen(PORT,()=>console.log(`DayZ Wipe Calendar running on ${PORT}`)))
