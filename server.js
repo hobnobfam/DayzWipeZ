@@ -137,7 +137,9 @@ app.delete("/api/admin/servers/:id",auth,admin,async(req,res)=>{
  await db("DELETE FROM servers WHERE id=$1",[req.params.id]); res.json({ok:true});
 });
 
-app.get("*",(req,res)=>res.sendFile(path.join(__dirname,"public","index.html")));
+app.get("/{*splat}",(req,res)=>{
+  res.sendFile(path.join(__dirname,"public","index.html"));
+});
 
 init().then(()=>app.listen(PORT,()=>console.log(`DayZ Wipe Calendar running on ${PORT}`)))
 .catch(e=>{console.error(e);process.exit(1)});
