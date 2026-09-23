@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: dayz-wipe-calendar
+    runtime: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
